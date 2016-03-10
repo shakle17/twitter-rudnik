@@ -5,6 +5,7 @@ from Tkinter import *
 import tweepy
 import json
 import sys
+sys.stdout.flush()
 
 
 consumer_key='FamvsN0TZBSWVmztTg5u5qhJZ'
@@ -14,37 +15,42 @@ access_token_secret='2d52qymkwoGJpRuczcM6WNjqRh6GogbzxZo5XsNJeYg9y'
 
 count_list = 0
 track=[]
-
+stream=None
 class StdoutRedirector(object):
     def __init__(self,text_widget):
         self.text_space = text_widget
 
     def write(self,string):
-        self.text_space.insert('end', string)
-        self.text_space.see('end')
+		try:
+			self.text_space.insert('end', string)
+			self.text_space.see('end')
+		except:
+			pass
 
 class StdOutListener(tweepy.StreamListener):
 	def on_data(self, data):
 		decoded = json.loads(data)
-		print '@%s: %s' % (decoded['user']['screen_name'], decoded['text'])
-		print ''
+		print '@%s: ' % (decoded['user']['screen_name'])
 		return True
-		return False
+		
+
+	def on_status(self, status):
+		return status
 
 	def on_error(self, status):
-		print status
+		return False
 
 listener = StdOutListener()
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_token_secret)
-stream = tweepy.Stream(auth, listener)
+
 
 class Gui(object):
 	def __init__(self):
-
+	
 		global count_list
 
-		
+		self.word_list=[]
 		self.top = Tk()
 		self.top.geometry('700x900')
 		self.top.resizable(width=FALSE, height=FALSE)
@@ -58,7 +64,7 @@ class Gui(object):
 		self.list_box.pack()
 		self.list_box.place(x=300, y=100)	
 
-		self.list_tweets = Listbox(self.top, width=80, height=38, yscrollcommand = self.scrollbar.set)
+		self.list_tweets = Listbox(self.top, width=80, height=38, yscrollcommand = self.scrollbar.set , xscrollcommand= self.scrollbar.set)
 		self.scrollbar.config( command = self.list_tweets.yview )
 		self.list_tweets.pack()
 		self.list_tweets.place(x=20, y=300)	
@@ -82,20 +88,33 @@ class Gui(object):
 		self.add = Button (self.top, text="Add Word", command=self.add_list)
 		self.add.pack()
 		self.add.place(x=570, y=50)
-		self.search = Button (self.top, text="Search", width=17)
-		self.search.place(x=300, y=180)
+
+		self.stop = Button (self.top, text="Stop", width=17 , command=self.stop)
+		self.stop.place(x=300, y=180)
 		try:
 			self.top.mainloop()
 		except KeyboardInterrupt:
 			exit()
 
 	def add_list(self):
+		global stream
+		if stream:
+			stream.disconnect()
+		stream = tweepy.Stream(auth, listener,timeout=10)
 		global count_list
 		self.entry_text = self.key_entry.get()
-		stream.filter(track=[self.entry_text.decode('UTF-8')],async=True)
-		sys.stdout = StdoutRedirector(self.list_tweets)
+		self.word_list.append(self.entry_text)
+		try :
+			stream.filter(track=self.word_list,async=True)
+			sys.stdout = (StdoutRedirector(self.list_tweets))
+		except:
+			sys.exit()		
 		self.list_box.insert(count_list, self.entry_text)
 		self.key_entry.delete(0, END)
 		count_list += 1
+
+	def stop(self):
+		global stream
+		stream.disconnect()
 
 Gui()
