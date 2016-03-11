@@ -54,42 +54,44 @@ class Gui(object):
 		self.top = Tk()
 		self.top.geometry('700x900')
 		self.top.resizable(width=FALSE, height=FALSE)
+		self.top.configure(background="#62ACFF")
 
 		self.scrollbar = Scrollbar(self.top)
 		self.scrollbar.pack( side = RIGHT, fill=Y )
 
 		
-		self.list_box = Listbox(self.top, height=5, yscrollcommand = self.scrollbar.set)
+		self.list_box = Listbox(self.top, height=5, yscrollcommand = self.scrollbar.set, bg="#C0DEFF")
 		self.scrollbar.config( command = self.list_box.yview )
 		self.list_box.pack()
 		self.list_box.place(x=300, y=100)	
 
-		self.list_tweets = Listbox(self.top, width=80, height=38, yscrollcommand = self.scrollbar.set , xscrollcommand= self.scrollbar.set)
+		self.list_tweets = Listbox(self.top, width=80, height=38, yscrollcommand = self.scrollbar.set , xscrollcommand= self.scrollbar.set, bg="#C0DEFF", relief=GROOVE)
 		self.scrollbar.config( command = self.list_tweets.yview )
 		self.list_tweets.pack()
 		self.list_tweets.place(x=20, y=300)	
 
 
-		self.key_label = Label(self.top, text="Key Words", font = "Verdana 20 bold")
+		self.key_label = Label(self.top, text="Key Words", font = "Verdana 20 bold", bg="#62ACFF")
 		self.key_label.pack( side = LEFT)
 		self.key_label.place(x=100, y=50)
 
-		self.tweets_label = Label(self.top, text="Tweets", font = "Verdana 22 bold")
+		self.tweets_label = Label(self.top, text="Tweets", font = "Verdana 22 bold", bg="#62ACFF")
 		self.tweets_label.pack( side = TOP)
 		self.tweets_label.place(x=300, y=250)
 
-		self.list_label = Label(self.top, text="Selected Words", font = "Verdana 15 bold")
+		self.list_label = Label(self.top, text="Selected Words", font = "Verdana 15 bold", bg="#62ACFF")
 		self.list_label.pack( side = LEFT)
 		self.list_label.place(x=100, y=100)
 
-		self.key_entry = Entry(self.top, bd =5, width=30)
+		self.key_entry = Entry(self.top, bd =5, width=30, bg = "#C0DEFF")
 		self.key_entry.pack(side = RIGHT)
 		self.key_entry.place(x=300, y=50)
-		self.add = Button (self.top, text="Add Word", command=self.add_list)
+
+		self.add = Button (self.top, text="Add Word", command=self.add_list, activebackground="#8DC3FF", bg='#C0DEFF')
 		self.add.pack()
 		self.add.place(x=570, y=50)
 
-		self.stop = Button (self.top, text="Stop", width=17 , command=self.stop)
+		self.stop = Button (self.top, text="Stop", width=17 , command=self.stop, activebackground="#8DC3FF", bg='#C0DEFF')
 		self.stop.place(x=300, y=180)
 		try:
 			self.top.mainloop()
